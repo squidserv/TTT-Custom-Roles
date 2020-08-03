@@ -216,18 +216,18 @@ function WEPS.DropNotifiedWeapon(ply, wep, death_drop)
 		if wep.PreDrop then
 			wep:PreDrop(death_drop)
 		end
-		
+
 		-- PreDrop might destroy weapon
 		if not IsValid(wep) then return end
-		
+
 		-- Tag this weapon as dropped, so that if it's a special weapon we do not
 		-- auto-pickup when nearby.
 		wep.IsDropped = true
-		
+
 		ply:DropWeapon(wep)
-		
+
 		wep:PhysWake()
-		
+
 		-- After dropping a weapon, always switch to holstered, so that traitors
 		-- will never accidentally pull out a traitor weapon
 		ply:SelectWeapon("weapon_ttt_unarmed")
@@ -236,24 +236,24 @@ end
 
 local function DropActiveWeapon(ply)
 	if not IsValid(ply) then return end
-	
+
 	local wep = ply:GetActiveWeapon()
-	
+
 	if not IsValid(wep) then return end
-	
+
 	if wep.AllowDrop == false then
 		return
 	end
-	
+
 	local tr = util.QuickTrace(ply:GetShootPos(), ply:GetAimVector() * 32, ply)
-	
+
 	if tr.HitWorld then
 		LANG.Msg(ply, "drop_no_room")
 		return
 	end
-	
+
 	ply:AnimPerformGesture(ACT_ITEM_PLACE)
-	
+
 	WEPS.DropNotifiedWeapon(ply, wep)
 end
 
@@ -261,45 +261,45 @@ concommand.Add("ttt_dropweapon", DropActiveWeapon)
 
 local function DropActiveAmmo(ply)
 	if not IsValid(ply) then return end
-	
+
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) then return end
-	
+
 	if not wep.AmmoEnt then return end
-	
+
 	local amt = wep:Clip1()
 	if amt < 1 or amt <= (wep.Primary.ClipSize * 0.25) then
 		LANG.Msg(ply, "drop_no_ammo")
 		return
 	end
-	
+
 	local pos, ang = ply:GetShootPos(), ply:EyeAngles()
 	local dir = (ang:Forward() * 32) + (ang:Right() * 6) + (ang:Up() * -5)
-	
+
 	local tr = util.QuickTrace(pos, dir, ply)
 	if tr.HitWorld then return end
-	
+
 	wep:SetClip1(0)
-	
+
 	ply:AnimPerformGesture(ACT_ITEM_GIVE)
-	
+
 	local box = ents.Create(wep.AmmoEnt)
 	if not IsValid(box) then return end
-	
+
 	box:SetPos(pos + dir)
 	box:SetOwner(ply)
 	box:Spawn()
-	
+
 	box:PhysWake()
-	
+
 	local phys = box:GetPhysicsObject()
 	if IsValid(phys) then
 		phys:ApplyForceCenter(ang:Forward() * 1000)
 		phys:ApplyForceOffset(VectorRand(), vector_origin)
 	end
-	
+
 	box.AmmoAmount = amt
-	
+
 	timer.Simple(2, function()
 		if IsValid(box) then
 			box:SetOwner(nil)
@@ -318,26 +318,26 @@ local function GiveEquipmentWeapon(sid, cls)
 	-- that we need its name, and hence his SteamID.
 	local ply = player.GetBySteamID(sid)
 	local tmr = "give_equipment" .. sid
-	
+
 	if (not IsValid(ply)) or (not ply:IsActiveSpecial()) then
 		timer.Remove(tmr)
 		return
 	end
-	
+
 	-- giving attempt, will fail if we're in a crazy spot in the map or perhaps
 	-- other glitchy cases
 	local w = ply:Give(cls)
-	
+
 	if (not IsValid(w)) or (not ply:HasWeapon(cls)) then
 		if not timer.Exists(tmr) then
 			timer.Create(tmr, 1, 0, function() GiveEquipmentWeapon(sid, cls) end)
 		end
-		
+
 		-- we will be retrying
 	else
 		-- can stop retrying, if we were
 		timer.Remove(tmr)
-		
+
 		if w.WasBought then
 			-- some weapons give extra ammo after being bought, etc
 			w:WasBought(ply)
@@ -354,45 +354,141 @@ function GM:TTTCanOrderEquipment(ply, id, is_item)
 	return true
 end
 
+local BuyableWeapons = {
+	[ROLE_DETECTIVE] = {},
+	[ROLE_MERCENARY] = {},
+	[ROLE_VAMPIRE] = {},
+	[ROLE_ZOMBIE] = {},
+	[ROLE_TRAITOR] = {},
+	[ROLE_ASSASSIN] = {},
+	[ROLE_HYPNOTIST] = {},
+	[ROLE_KILLER] = {}
+}
+-- If this logic or the list of roles who can buy is changed, it must also be updated in init.lua and cl_equip.lua
+local function ReadRoleEquipment(role, rolename)
+	local rolefiles, _ = file.Find("roleweapons/" .. rolename:lower() .. "/*.txt", "DATA")
+	for _, v in pairs(rolefiles) do
+		local lastdotpos = v:find("%.")
+		local weaponname
+		if lastdotpos == nil then
+			weaponname = v
+		else
+			weaponname = v:sub(0, lastdotpos - 1)
+		end
+		table.insert(BuyableWeapons[role], weaponname)
+	end
+end
+
+ReadRoleEquipment(ROLE_DETECTIVE, "Detective")
+ReadRoleEquipment(ROLE_MERCENARY, "Mercenary")
+ReadRoleEquipment(ROLE_VAMPIRE, "Vampire")
+ReadRoleEquipment(ROLE_ZOMBIE, "Zombie")
+ReadRoleEquipment(ROLE_TRAITOR, "Traitor")
+ReadRoleEquipment(ROLE_ASSASSIN, "Assassin")
+ReadRoleEquipment(ROLE_HYPNOTIST, "Hypnotist")
+ReadRoleEquipment(ROLE_KILLER, "Killer")
+
+local function HandleRoleWeapons(role, roletable, swep_table, id)
+    if roletable and table.HasValue(roletable, id) and not table.HasValue(swep_table.CanBuy, role) then
+        table.insert(swep_table.CanBuy, role)
+    end
+end
+
 -- Equipment buying
 local function OrderEquipment(ply, cmd, args)
 	if not IsValid(ply) or #args ~= 1 then return end
-	
+
 	if not (ply:IsActiveTraitor() or ply:IsActiveDetective() or ply:IsActiveMercenary() or ply:IsActiveZombie() or ply:IsActiveVampire() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() or ply:IsActiveKiller()) then return end
-	
+
 	-- no credits, can't happen when buying through menu as button will be off
 	if ply:GetCredits() < 1 then return end
-	
+
 	-- it's an item if the arg is an id instead of an ent name
 	local id = args[1]
 	local is_item = tonumber(id)
-	
+
 	if not hook.Run("TTTCanOrderEquipment", ply, id, is_item) then return end
-	
+
 	-- we use weapons.GetStored to save time on an unnecessary copy, we will not
 	-- be modifying it
 	local swep_table = (not is_item) and weapons.GetStored(id) or nil
-	
+
+	local role = ply:GetRole()
+	-- If this role has a table of additional weapons and that table includes this weapon
+	-- and this weapon is not currently buyable by the role then mark this weapon as buyable
+    if swep_table then
+        -- Add the loaded weapons for this role
+        HandleRoleWeapons(role, BuyableWeapons[role], swep_table, id)
+
+        -- If the player is a mercenary and mercenaries should have all weapons that traitors and detectives have
+        local mercmode = GetGlobalInt("ttt_shop_merc_mode")
+        if mercmode > 0 and role == ROLE_MERCENARY then
+            -- Traitor OR Detective or Detective only modes
+            if mercmode == 1 or mercmode == 3 then
+                -- Add the loaded weapons for Detective
+                HandleRoleWeapons(role, BuyableWeapons[ROLE_DETECTIVE], swep_table, id)
+
+                -- If this weapon is still not buyable but is buyable by Detective, add this role directly
+                if not table.HasValue(swep_table.CanBuy, role) and table.HasValue(swep_table.CanBuy, ROLE_DETECTIVE) then
+                    table.insert(swep_table.CanBuy, role)
+                end
+            end
+
+            -- Traitor OR Detective or Traitor only modes
+            if mercmode == 1 or mercmode == 4 then
+                -- Add the loaded weapons for Traitor
+                HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
+
+                -- If this weapon is still not buyable but is buyable by Traitor, add this role directly
+                if not table.HasValue(swep_table.CanBuy, role) and table.HasValue(swep_table.CanBuy, ROLE_TRAITOR) then
+                    table.insert(swep_table.CanBuy, role)
+                end
+            end
+
+            -- Traitor AND Detective
+            -- If this weapon is not buyable by this role
+            if mercmode == 2 and not table.HasValue(swep_table.CanBuy, role) then
+                local traitorbuyable = (BuyableWeapons[ROLE_TRAITOR] and table.HasValue(BuyableWeapons[ROLE_TRAITOR], id)) or table.HasValue(swep_table.CanBuy, ROLE_TRAITOR)
+                local detectivebuyable = (BuyableWeapons[ROLE_DETECTIVE] and table.HasValue(BuyableWeapons[ROLE_DETECTIVE], id)) or table.HasValue(swep_table.CanBuy, ROLE_DETECTIVE)
+                -- If the weapon is buyable in either of the two methods by both the Traitor and the Detective, add it for this role too
+                if traitorbuyable and detectivebuyable then
+                    table.insert(swep_table.CanBuy, role)
+                end
+            end
+        end
+        -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
+        if (GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or
+            (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST) then
+            -- Add the loaded weapons for Traitor
+            HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
+
+            -- If this weapon is still not buyable but is buyable by Traitor, add this role directly
+            if not table.HasValue(swep_table.CanBuy, role) and table.HasValue(swep_table.CanBuy, ROLE_TRAITOR) then
+                table.insert(swep_table.CanBuy, role)
+            end
+        end
+	end
+
 	-- some weapons can only be bought once per player per round, this used to be
 	-- defined in a table here, but is now in the SWEP's table
 	if swep_table and swep_table.LimitedStock and ply:HasBought(id) then
 		LANG.Msg(ply, "buy_no_stock")
 		return
 	end
-	
+
 	local received = false
-	
+
 	if is_item then
 		id = tonumber(id)
-		
+
 		-- item whitelist check
-		local allowed = GetEquipmentItem(ply:GetRole(), id)
-		
+		local allowed = GetEquipmentItem(role, id)
+
 		if not allowed then
 			print(ply, "tried to buy item not buyable for his class:", id)
 			return
 		end
-		
+
 		-- ownership check and finalise
 		if id and EQUIP_NONE < id then
 			if not ply:HasEquipmentItem(id) then
@@ -402,33 +498,33 @@ local function OrderEquipment(ply, cmd, args)
 		end
 	elseif swep_table then
 		-- weapon whitelist check
-		if not table.HasValue(swep_table.CanBuy, ply:GetRole()) then
+		if not table.HasValue(swep_table.CanBuy, role) then
 			print(ply, "tried to buy weapon his role is not permitted to buy")
 			return
 		end
-		
+
 		-- if we have a pending order because we are in a confined space, don't
 		-- start a new one
 		if HasPendingOrder(ply) then
 			LANG.Msg(ply, "buy_pending")
 			return
 		end
-		
+
 		-- no longer restricted to only WEAPON_EQUIP weapons, just anything that
 		-- is whitelisted and carryable
 		if ply:CanCarryWeapon(swep_table) then
 			GiveEquipmentWeapon(ply:SteamID(), id)
-			
+
 			received = true
 		end
 	end
-	
+
 	if received then
 		ply:SubtractCredits(1)
 		LANG.Msg(ply, "buy_received")
-		
+
 		ply:AddBought(id)
-		
+
 		timer.Simple(0.5,
 			function()
 				if not IsValid(ply) then return end
@@ -441,7 +537,7 @@ local function OrderEquipment(ply, cmd, args)
 				end
 				net.Send(ply)
 			end)
-		
+
 		hook.Call("TTTOrderedEquipment", GAMEMODE, ply, id, is_item)
 	end
 end
@@ -455,11 +551,11 @@ end
 
 local function SetDisguise(ply, cmd, args)
 	if not IsValid(ply) or not ply:IsActiveTraitor() then return end
-	
+
 	if ply:HasEquipmentItem(EQUIP_DISGUISE) then
 		local state = #args == 1 and tobool(args[1])
 		if hook.Run("TTTToggleDisguiser", ply, state) then return end
-		
+
 		ply:SetNWBool("disguised", state)
 		LANG.Msg(ply, state and "disg_turned_on" or "disg_turned_off")
 	end
@@ -478,7 +574,7 @@ concommand.Add("ttt_cheat_credits", CheatCredits, nil, nil, FCVAR_CHEAT)
 local function TransferCredits(ply, cmd, args)
 	if (not IsValid(ply)) or (not ply:IsActiveSpecial()) then return end
 	if #args ~= 2 then return end
-	
+
 	local sid = tostring(args[1])
 	local credits = tonumber(args[2])
 	if sid and credits then
@@ -487,18 +583,18 @@ local function TransferCredits(ply, cmd, args)
 			LANG.Msg(ply, "xfer_no_recip")
 			return
 		end
-		
+
 		if ply:GetCredits() < credits then
 			LANG.Msg(ply, "xfer_no_credits")
 			return
 		end
-		
+
 		credits = math.Clamp(credits, 0, ply:GetCredits())
 		if credits == 0 then return end
-		
+
 		ply:SubtractCredits(credits)
 		target:AddCredits(credits)
-		
+
 		LANG.Msg(ply, "xfer_success", { player = target:Nick() })
 		LANG.Msg(target, "xfer_received", { player = ply:Nick(), num = credits })
 	end
@@ -509,7 +605,7 @@ concommand.Add("ttt_transfer_credits", TransferCredits)
 local function FakeTransferCredits(ply, cmd, args)
 	if (not IsValid(ply)) or (not ply:IsActiveSpecial()) then return end
 	if #args ~= 2 then return end
-	
+
 	local sid = tostring(args[1])
 	local credits = tonumber(args[2])
 	if sid and credits then
@@ -518,17 +614,17 @@ local function FakeTransferCredits(ply, cmd, args)
 			LANG.Msg(ply, "xfer_no_recip")
 			return
 		end
-		
+
 		if ply:GetCredits() < credits then
 			LANG.Msg(ply, "xfer_no_credits")
 			return
 		end
-		
+
 		credits = math.Clamp(credits, 0, ply:GetCredits())
 		if credits == 0 then return end
-		
+
 		ply:SubtractCredits(credits)
-		
+
 		LANG.Msg(ply, "xfer_success", { player = target:Nick() })
 	end
 end

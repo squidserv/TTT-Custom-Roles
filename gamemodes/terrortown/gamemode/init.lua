@@ -158,6 +158,11 @@ CreateConVar("ttt_drinking_team_kill", "drink")
 CreateConVar("ttt_drinking_suicide", "drink")
 CreateConVar("ttt_drinking_jester_kill", "shot")
 
+-- Shop convars
+CreateConVar("ttt_shop_merc_mode", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_shop_assassin_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_shop_hypnotist_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+
 local ttt_detective = CreateConVar("ttt_sherlock_mode", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY)
 local ttt_minply = CreateConVar("ttt_minimum_players", "2", FCVAR_ARCHIVE + FCVAR_NOTIFY)
 

@@ -22,19 +22,153 @@ include("favorites_db.lua")
 -- Buyable weapons are loaded automatically. Buyable items are defined in
 -- equip_items_shd.luaslotnumber
 
-local Equipment = niltr
+local BuyableWeapons = {
+    [ROLE_DETECTIVE] = {},
+    [ROLE_MERCENARY] = {},
+    [ROLE_VAMPIRE] = {},
+    [ROLE_ZOMBIE] = {},
+    [ROLE_TRAITOR] = {},
+    [ROLE_ASSASSIN] = {},
+    [ROLE_HYPNOTIST] = {},
+    [ROLE_KILLER] = {}
+}
+
+net.Receive("TTT_BuyableWeapon_Detective", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_DETECTIVE], v) then
+            table.insert(BuyableWeapons[ROLE_DETECTIVE], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Mercenary", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_MERCENARY], v) then
+            table.insert(BuyableWeapons[ROLE_MERCENARY], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Vampire", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_VAMPIRE], v) then
+            table.insert(BuyableWeapons[ROLE_VAMPIRE], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Zombie", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_ZOMBIE], v) then
+            table.insert(BuyableWeapons[ROLE_ZOMBIE], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Traitor", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_TRAITOR], v) then
+            table.insert(BuyableWeapons[ROLE_TRAITOR], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Assassin", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_ASSASSIN], v) then
+            table.insert(BuyableWeapons[ROLE_ASSASSIN], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Hypnotist", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_HYPNOTIST], v) then
+            table.insert(BuyableWeapons[ROLE_HYPNOTIST], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Killer", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_KILLER], v) then
+            table.insert(BuyableWeapons[ROLE_KILLER], v)
+        end
+    end
+end)
+
+local Equipment = { }
 function GetEquipmentForRole(role)
-	-- need to build equipment cache?
-	if not Equipment then
-		-- start with all the non-weapon goodies
-		local tbl = table.Copy(EquipmentItems)
-		
-		-- find buyable weapons to load info from
-		for k, v in pairs(weapons.GetList()) do
-			if v and v.CanBuy then
-				local data = v.EquipMenuData or {}
+local mercmode = GetGlobalInt("ttt_shop_merc_mode")
+
+    -- Prime traitor and detective lists to make sure the sync works
+    if (mercmode > 0 and role == ROLE_MERCENARY) or
+        (GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or
+        (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST) then
+        if not Equipment[ROLE_TRAITOR] then
+            GetEquipmentForRole(ROLE_TRAITOR)
+        end
+    end
+    if mercmode > 0 and role == ROLE_MERCENARY then
+        if not Equipment[ROLE_DETECTIVE] then
+            GetEquipmentForRole(ROLE_DETECTIVE)
+        end
+    end
+
+    -- Cache the equipment
+    if not Equipment[role] then
+        -- start with all the non-weapon goodies
+        local tbl = table.Copy(EquipmentItems)
+
+        -- find buyable weapons to load info from
+        for _, v in pairs(weapons.GetList()) do
+            if v and v.CanBuy then
+                local id = WEPS.GetClass(v)
+                local roletable = BuyableWeapons[role] or {}
+                -- Make sure each of the buyable weapons is in the role's equipment list
+                -- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
+                if not table.HasValue(v.CanBuy, role) and table.HasValue(roletable, id) then
+                    table.insert(v.CanBuy, role)
+                end
+
+                -- If the player is a mercenary
+                if mercmode > 0 and role == ROLE_MERCENARY then
+                    -- Traitor OR Detective or Detective only modes
+                    if mercmode == 1 or mercmode == 3 then
+                        -- and they can't already buy this weapon
+                        if not table.HasValue(v.CanBuy, role) and
+                            -- and detectives CAN buy this weapon, let the mercenary buy it too
+                            table.HasValue(v.CanBuy, ROLE_DETECTIVE) then
+                            table.insert(v.CanBuy, role)
+                        end
+                    end
+
+                    -- Traitor OR Detective or Traitor only modes
+                    if mercmode == 1 or mercmode == 4 then
+                        -- and they can't already buy this weapon
+                        if not table.HasValue(v.CanBuy, role) and
+                            -- and traitors CAN buy this weapon, let the mercenary buy it too
+                            table.HasValue(v.CanBuy, ROLE_TRAITOR) then
+                            table.insert(v.CanBuy, role)
+                        end
+                    end
+
+                    -- Traitor AND Detective
+                    if mercmode == 2 then
+                        -- and they can't already buy this weapon
+                        if not table.HasValue(v.CanBuy, role) and
+                            -- and detectives AND traitors CAN buy this weapon, let the mercenary buy it too
+                            table.HasValue(v.CanBuy, ROLE_DETECTIVE) and table.HasValue(v.CanBuy, ROLE_TRAITOR) then
+                            table.insert(v.CanBuy, role)
+                        end
+                    end
+                end
+
+                -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
+                if ((GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST)) and
+                    -- and they can't already buy this weapon
+                    not table.HasValue(v.CanBuy, role) and
+                    -- and vanilla traitors CAN buy this weapon, let this player buy it too
+                    table.HasValue(v.CanBuy, ROLE_TRAITOR) then
+                    table.insert(v.CanBuy, role)
+                end
+
+                local data = v.EquipMenuData or {}
 				local base = {
-					id = WEPS.GetClass(v),
+					id = id,
 					name = v.PrintName or "Unnamed",
 					limited = v.LimitedStock,
 					kind = v.Kind or WEAPON_NONE,
@@ -71,7 +205,7 @@ function GetEquipmentForRole(role)
 			end
 		end
 		
-		Equipment = tbl
+		Equipment[role] = tbl[role]
 	end
 	
 	return Equipment and Equipment[role] or {}
@@ -348,6 +482,15 @@ local function TraitorMenuPopup()
 				slot:SetIconText(item.slot)
 				ic.slot = item.slot
 				
+                -- Credit to @Angela on the Lonely Yogs Discord for the fix!
+                -- Clamp the item slot within the correct limits
+                if ic.slot ~= nil then
+                    if ic.slot > #paneltable then
+                        ic.slot = #paneltable
+                    elseif ic.slot < 1 then
+                        ic.slot = 1
+                    end
+                end
 				slot:SetIconProperties(COLOR_WHITE,
 					"DefaultBold",
 					{ opacity = 220, offset = 1 },
