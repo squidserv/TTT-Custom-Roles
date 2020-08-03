@@ -491,6 +491,7 @@ local function TraitorMenuPopup()
                         ic.slot = 1
                     end
                 end
+
 				slot:SetIconProperties(COLOR_WHITE,
 					"DefaultBold",
 					{ opacity = 220, offset = 1 },
