@@ -1,131 +1,145 @@
+# TTT-Custom-Roles
+
 Adds a bunch of new roles to the Garry's Mod TTT gamemode, as seen on the Yogscast and Achievement Hunter's let's play.
 
-Steam workshop page: https://steamcommunity.com/sharedfiles/filedetails/?id=2125529065
+**Steam workshop page:** https://steamcommunity.com/sharedfiles/filedetails/?id=2125529065
 
-Special Thanks:
-Jenssons for the 'Town of Terror' mod which was the inspiration for this mod.
-Thanks to Noxx, Lix3, and Kommandos0 for the original version of this mod.
-Thanks to Malivil for fixing the voice chat in their version
+### Special Thanks:
+
+- [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the 'Town of Terror' mod which was the inspiration for this mod.
+- Thanks to Noxx, Lix3, and Kommandos0 for the original version of this mod.
+- Thanks to Malivil for fixing the voice chat in their version
+
+### Compatibility issues
 
 Some weapon mods cause the team shops to bug out and only display one item (The one that is causing the issue). Here are some mods with known compatibility issues:
 
-TTT Gravity Changer
-Time Manipulator
-TTT Blue Firework
-TTT Scarface Jihad Bomb
-Gameplay instructions
-Innocent Team:
+- [TTT Gravity Changer](https://steamcommunity.com/sharedfiles/filedetails/?id=1618719637)
+- [Time Manipulator](https://steamcommunity.com/sharedfiles/filedetails/?id=1318271171)
+- [TTT Blue Firework](https://steamcommunity.com/sharedfiles/filedetails/?id=1421303070)
+- [TTT Scarface Jihad Bomb](https://steamcommunity.com/sharedfiles/filedetails/?id=917717470)
+
+# Gameplay instructions
+
+## Innocent Team:
 Goal: Kill all members of the traitor team
 
-Innocent
+**Innocent**
+- A standard player. Has no special abilities
 
-A standard player. Has no special abilities
-Detective
+**Detective**
+- All other players are notified of the Detectives at the start of the round
+- Can search bodies of dead players
+     - Reveals the role, what killed them, who they last saw and other useful information to all players
+     - If other players try to search a body it will instead alert Detectives of the body’s location (Optional)
+- Has access to a shop
+     - Spawns with two credits
+     - Gains a credit whenever a member of the traitor team is killed
 
-All other players are notified of the Detectives at the start of the round
-Can search bodies of dead players
-Reveals the role, what killed them, who they last saw and other useful information to all players
-If other players try to search a body it will instead alert Detectives of the body’s location (Optional)
-Has access to a shop
-Spawns with two credits
-Gains a credit whenever a member of the traitor team is killed
-Glitch
+**Glitch**
+- Has a chance to spawn instead of an Innocent
+- Appears as a Traitor (or Zombie) to members of the traitor team
+- Prevents members of the traitor team from using team text and voice chat
 
-Has a chance to spawn instead of an Innocent
-Appears as a Traitor (or Zombie) to members of the traitor team
-Prevents members of the traitor team from using team text and voice chat
-Mercenary
+**Mercenary**
+- Has a chance to spawn instead of an Innocent
+- Has access to a shop
+     - Spawns with one credit
+     - Can buy any naturally occuring weapon or items available to both Detectives and Traitors
 
-Has a chance to spawn instead of an Innocent
-Has access to a shop
-Spawns with one credit
-Can buy any naturally occuring weapon or items available to both Detectives and Traitors
-Phantom
+**Phantom**
+- Has a chance to spawn instead of an Innocent
+- Haunts attackers on death
+     - Haunted players leave a smoke trail behind them
+     - Killing the haunted player will revive the Phantom on 50 health
+     - Detectives are notified when the Phantom is killed or revived
 
-Has a chance to spawn instead of an Innocent
-Haunts attackers on death
-Haunted players leave a smoke trail behind them
-Killing the haunted player will revive the Phantom on 50 health
-Detectives are notified when the Phantom is killed or revived
-Traitor Team:
+## Traitor Team:
 Goal: Kill all members of the innocent team
 
-Traitor
+**Traitor**
+- Notified of team members and Jesters at the start of the round
+- Has access to a shop
+     - Spawns with one credit
+     - Gains a credit whenever enough innocent team members are killed
 
-Notified of team members and Jesters at the start of the round
-Has access to a shop
-Spawns with one credit
-Gains a credit whenever enough innocent team members are killed
-Assassin
+**Assassin**
+- Has a chance to spawn instead of a Traitor
+- Notified of team members and Jesters at the start of the round
+- Given a random target at the start of the round
+     - Deals double damage to the target and half damage to all other players
+     - When the target dies a new target is selected
+     - Detectives will always be the final targets
+     - Killing the wrong player will fail the contract and the Assassin will deal half damage to all players
+- Has access to a basic shop
+     - Spawns with no credits
+     - Gains a credit whenever enough innocent team members are killed
 
-Has a chance to spawn instead of a Traitor
-Notified of team members and Jesters at the start of the round
-Given a random target at the start of the round
-Deals double damage to the target and half damage to all other players
-When the target dies a new target is selected
-Detectives will always be the final targets
-Killing the wrong player will fail the contract and the Assassin will deal half damage to all players
-Has access to a basic shop
-Spawns with no credits
-Gains a credit whenever enough innocent team members are killed
-Hypnotist
+**Hypnotist**
+- Has a chance to spawn instead of a Traitor
+- Notified of team members and Jesters at the start of the round
+- Spawns with a brain washing device
+     - When used on a dead body it will revive them at full health
+     - Changes the role of the revived player to Traitor
+     - Cannot be used on Jesters and Swappers
+- Has access to a basic shop
+     - Spawns with no credits
+     - Gains a credit whenever enough innocent team members are killed
 
-Has a chance to spawn instead of a Traitor
-Notified of team members and Jesters at the start of the round
-Spawns with a brain washing device
-When used on a dead body it will revive them at full health
-Changes the role of the revived player to Traitor
-Cannot be used on Jesters and Swappers
-Has access to a basic shop
-Spawns with no credits
-Gains a credit whenever enough innocent team members are killed
-Vampire
+**Vampire**
+- Has a chance to spawn instead of a Traitor
+- Notified of team members and Jesters at the start of the round
+- Spawns with fangs
+     - When used on a dead body it will destroy the body and heal 50 health up to a maximum of 125 health
+     - Right click will grant short term speed and invisibility on a cooldown
+- Has access to a basic shop
+     - Spawns with no credits
+     - Gains a credit whenever enough innocent team members are killed
 
-Has a chance to spawn instead of a Traitor
-Notified of team members and Jesters at the start of the round
-Spawns with fangs
-When used on a dead body it will destroy the body and heal 50 health up to a maximum of 125 health
-Right click will grant short term speed and invisibility on a cooldown
-Has access to a basic shop
-Spawns with no credits
-Gains a credit whenever enough innocent team members are killed
-Zombie
+**Zombie**
+- Has a chance to spawn instead of all Traitors
+- Notified of team members and Jesters at the start of the round
+- Spawns with claws
+     - Deals 50 damage to members of the innocent team
+     - If used to kill a player they will repsawn as a zombie
+- Deals half damage will all standard weapons
+- Has access to a perk shop
+     - Spawns with no credits
+     - Gains a credit upon infecting another player with the claws
 
-Has a chance to spawn instead of all Traitors
-Notified of team members and Jesters at the start of the round
-Spawns with claws
-Deals 50 damage to members of the innocent team
-If used to kill a player they will repsawn as a zombie
-Deals half damage will all standard weapons
-Has access to a perk shop
-Spawns with no credits
-Gains a credit upon infecting another player with the claws
-Independent Players:
-Jester (Goal: Get killed by another player)
+## Independent Players:
 
-Has a chance to spawn instead of an Innocent
-Deals no damage to other players or props
-Takes no environmental damage (e.g. fire, fall, explosion...)
-Can message members of the traitor team using team text and voice chat but will not recieve replies
-Swapper (Goal: Get killed by another player and then fulfill their old goal)
+**Jester (Goal: Get killed by another player)**
+- Has a chance to spawn instead of an Innocent
+- Deals no damage to other players or props
+- Takes no environmental damage (e.g. fire, fall, explosion...)
+- Can message members of the traitor team using team text and voice chat but will not recieve replies
 
-Has a chance to spawn instead of an Innocent
-Appears as a Jester to members of the traitor team
-Deals no damage to other players or props
-Takes no environmental damage (e.g. fire, fall, explosion...)
-Can message members of the traitor team using team text and voice chat but will not recieve replies
-When killed by another player the Swapper swaps roles with their attacker ◦ The attacker will die instead and the Swapper will respawn with the newly swapped role ◦ If a Detective searches the body of the attacker they will look like a Swapper
-Killer (Goal: Be the last player standing)
+**Swapper (Goal: Get killed by another player and then fulfill their old goal)**
 
-Has a chance to spawn instead of an Innocent
-Spawns with 150 health and maximum health
-Traitors are notified if there is a Killer
-Has access to a shop
-Spawns with one credit
-Can buy any naturally occuring weapon or items available to both Detectives and Traitors
-Server config options
+- Has a chance to spawn instead of an Innocent
+- Appears as a Jester to members of the traitor team
+- Deals no damage to other players or props
+- Takes no environmental damage (e.g. fire, fall, explosion...)
+- Can message members of the traitor team using team text and voice chat but will not recieve replies
+- When killed by another player the Swapper swaps roles with their attacker
+     ◦ The attacker will die instead and the Swapper will respawn with the newly swapped role
+     ◦ If a Detective searches the body of the attacker they will look like a Swapper
+
+**Killer (Goal: Be the last player standing)**
+
+- Has a chance to spawn instead of an Innocent
+- Spawns with 150 health and maximum health
+- Traitors are notified if there is a Killer
+- Has access to a shop
+     - Spawns with one credit
+     - Can buy any naturally occuring weapon or items available to both Detectives and Traitors
+
+# Server config options
+
 Add the following to your server config:
 
+```cpp
 // ----------------------------------------
 // Custom Role Settings
 // ----------------------------------------
@@ -173,3 +187,4 @@ ttt_zombie_pct              0.25 // (Default: 0.25): Percentage of total players
 ttt_mer_credits_starting    1    // (Default: 1): Number of credits the Mercenary starts with
 ttt_kil_credits_starting    2    // (Default: 2): Number of credits the Killer starts with
 ttt_detective_search_only   1    // (Default: 1): Whether only detectives can search bodies or not
+```
