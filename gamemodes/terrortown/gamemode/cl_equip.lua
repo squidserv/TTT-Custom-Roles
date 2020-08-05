@@ -97,7 +97,8 @@ local mercmode = GetGlobalInt("ttt_shop_merc_mode")
     -- Prime traitor and detective lists to make sure the sync works
     if (mercmode > 0 and role == ROLE_MERCENARY) or
         (GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or
-        (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST) then
+        (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST) or 
+		(GetGlobalBool("ttt_shop_vampire_sync") and role == ROLE_VAMPIRE) then
         if not Equipment[ROLE_TRAITOR] then
             GetEquipmentForRole(ROLE_TRAITOR)
         end
@@ -158,7 +159,9 @@ local mercmode = GetGlobalInt("ttt_shop_merc_mode")
                 end
 
                 -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
-                if ((GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST)) and
+                if ((GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or 
+					(GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST)) or 
+					(GetGlobalBool("ttt_shop_vampire_sync") and role == ROLE_VAMPIRE) and
                     -- and they can't already buy this weapon
                     not table.HasValue(v.CanBuy, role) and
                     -- and vanilla traitors CAN buy this weapon, let this player buy it too

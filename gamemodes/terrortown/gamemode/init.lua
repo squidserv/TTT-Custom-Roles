@@ -138,6 +138,7 @@ CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
 CreateConVar("ttt_shop_merc_mode", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_shop_assassin_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_shop_hypnotist_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_shop_vampire_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 
 -- Other
 CreateConVar("ttt_use_weapon_spawn_scripts", "1")
@@ -332,6 +333,7 @@ function GM:SyncGlobals()
 	SetGlobalInt("ttt_shop_merc_mode", GetConVar("ttt_shop_merc_mode"):GetInt())
     SetGlobalBool("ttt_shop_assassin_sync", GetConVar("ttt_shop_assassin_sync"):GetBool())
     SetGlobalBool("ttt_shop_hypnotist_sync", GetConVar("ttt_shop_hypnotist_sync"):GetBool())
+	SetGlobalBool("ttt_shop_vampire_sync", GetConVar("ttt_shop_vampire_sync"):GetBool())
 	
 	SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 	SetGlobalBool("sv_voiceenable", GetConVar("sv_voiceenable"):GetBool())																	  

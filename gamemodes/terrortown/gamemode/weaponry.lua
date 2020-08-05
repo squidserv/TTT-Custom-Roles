@@ -458,7 +458,8 @@ local function OrderEquipment(ply, cmd, args)
         end
         -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
         if (GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or
-            (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST) then
+            (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST) or 
+			(GetGlobalBool("ttt_shop_vampire_sync") and role == ROLE_VAMPIRE) then
             -- Add the loaded weapons for Traitor
             HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
 
