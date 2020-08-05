@@ -1463,6 +1463,7 @@ function SelectRoles()
 			table.remove(choices, pick)
 			hasEMT = true
 		end
+	end
 	for k, v in pairs(choices) do
 		if v:GetRole() ~= ROLE_DETECTIVE then
 			print(v:Nick() .. " (" .. v:SteamID() .. ") - Innocent")
