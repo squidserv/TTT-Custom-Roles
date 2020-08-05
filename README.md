@@ -9,6 +9,7 @@ Adds a bunch of new roles to the Garry's Mod TTT gamemode, as seen on the Yogsca
 - [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the 'Town of Terror' mod which was the inspiration for this mod.
 - Thanks to Noxx, Lix3, and Kommandos0 for the original version of this mod.
 - Thanks to Malivil for fixing the voice chat in their version
+- Thanks to [SPAYED]Bud for the emt role
 
 ### Compatibility issues
 
@@ -153,7 +154,8 @@ ttt_vampire_enabled   1 // (Default: 1): Whether the Vampire should spawn or not
 ttt_zombie_enabled    1 // (Default: 1): Whether Zombies should spawn or not
 ttt_jester_enabled    1 // (Default: 1): Whether the Jester should spawn or not
 ttt_swapper_enabled   1 // (Default: 1): Whether the Swapper should spawn or not
-ttt_killer_enabled    1 // (Default: 1): Whether the Swapper should spawn or not
+ttt_killer_enabled    1 // (Default: 1): Whether the killer should spawn or not
+ttt_emt_enabled       1 // (Default: 0): Whether the EMT should spawn or not
 
 // Role Spawn Chances
 ttt_glitch_chance    0.25 // (Default: 0.25): Chance of the Glitch spawning in a round
@@ -166,6 +168,7 @@ ttt_zombie_chance    0.10 // (Default: 0.10): Chance of Zombies replacing traito
 ttt_jester_chance    0.25 // (Default: 0.25): Chance of the Jester spawning in a round
 ttt_swapper_chance   0.25 // (Default: 0.25): Chance of the Swapper spawning in a round
 ttt_killer_chance    0.25 // (Default: 0.25): Chance of the Killer spawning in a round
+ttt_emt_chance       0.25 // (Default: 0.25): Chance of the EMT spawning in a round
 
 // Role Spawn Requirements
 ttt_glitch_required_innos       2 // (Default: 2): Number of innocents for the Glitch to spawn
@@ -177,6 +180,7 @@ ttt_vampire_required_traitors   2 // (Default: 2): Number of traitors for the Va
 ttt_jester_required_innos       2 // (Default: 2): Number of innocents for the Jester to spawn
 ttt_swapper_required_innos      2 // (Default: 2): Number of innocents for the Swapper to spawn
 ttt_killer_required_innos       3 // (Default: 3): Number of innocents for the Killerto spawn
+ttt_emt_required_innos          2 // (Default: 2): Number of innocents for the EMT to spawn
 
 // Karma
 ttt_karma_jesterkill_penalty 50   // (Default: 50): Karma penalty for killing the Jester
@@ -187,6 +191,11 @@ ttt_shop_merc_mode      0 // How to handle Mercenary shop weapons. All modes inc
 ttt_shop_assassin_sync  0 // Whether Assassins should have all weapons that vanilla Traitors have in their weapon shop
 ttt_shop_hypnotist_sync 0 // Whether Hypnotists should have all weapons that vanilla Traitors have in their weapon shop
 ttt_shop_vampire_sync   0 // Whether Vampires should have all weapons that vanilla Traitors have in their weapon shop
+
+//EMT Variables
+ttt_emt_hot_initial		20 // The immediate health boost from the EMT Healing Ray
+ttt_emt_hot_amount		5  // The amount of health received per interval from the Healing Ray HoT
+ttt_emt_hot_charges		3  // The ammo for the EMT Healing Ray
 
 // Other
 ttt_zombie_pct              0.25 // (Default: 0.25): Percentage of total players that will be a Zombie
