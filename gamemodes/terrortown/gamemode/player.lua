@@ -738,6 +738,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 					if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
 						if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_KILLER then
 							table.insert(innocents, p:Nick())
+						end
 						elseif p:GetRole() == ROLE_MERCENARY then
 							table.insert(mercenaries, p:Nick())
 						end
