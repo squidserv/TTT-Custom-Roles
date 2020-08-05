@@ -234,7 +234,7 @@ function CLSCORE:BuildScorePanel(dpanel)
 	for id, s in pairs(scores) do
 		if id ~= -1 then
 			local was_traitor = s.was_traitor
-			local role = was_traitor and T("traitor") or (s.was_detective and T("detective") or (s.was_hypnotist and T("hypnotist") or (s.was_mercenary and T("mercenary") or (s.was_jester and T("jester") or (s.was_phantom and T("phantom") or (s.was_glitch and T("glitch") or (s.was_zombie and T("zombie") or (s.was_vampire and T("vampire") or (s.was_swapper and T("swapper") or (s.was_assassin and T("assassin") or (s.was_killer and T("killer") or (s.was_emt and T("emt") or T("innocent"))))))))))))
+			local role = was_traitor and T("traitor") or (s.was_detective and T("detective") or (s.was_hypnotist and T("hypnotist") or (s.was_mercenary and T("mercenary") or (s.was_jester and T("jester") or (s.was_phantom and T("phantom") or (s.was_glitch and T("glitch") or (s.was_zombie and T("zombie") or (s.was_vampire and T("vampire") or (s.was_swapper and T("swapper") or (s.was_assassin and T("assassin") or (s.was_killer and T("killer") or (s.was_emt and T("emt") or T("innocent")))))))))))))
 			
 			local surv = ""
 			if s.deaths > 0 then
