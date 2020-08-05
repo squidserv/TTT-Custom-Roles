@@ -90,7 +90,7 @@ CreateConVar("ttt_vampire_enabled", "1")
 CreateConVar("ttt_swapper_enabled", "1")
 CreateConVar("ttt_assassin_enabled", "1")
 CreateConVar("ttt_killer_enabled", "1")
-CreateConVar("ttt_emt_enabled", "1")
+CreateConVar("ttt_emt_enabled", "0")
 
 CreateConVar("ttt_zombie_chance", "0.1")
 CreateConVar("ttt_hypnotist_chance", "0.2")
