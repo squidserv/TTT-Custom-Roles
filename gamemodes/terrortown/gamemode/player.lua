@@ -731,11 +731,19 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 		for k, v in pairs(player.GetAll()) do
 			if v:GetRole() == ROLE_ASSASSIN then
 				local innocents = {}
+				local mercenaries = {}
+				local emts = {}
 				local detectives = {}
 				for i, p in pairs(player.GetAll()) do
 					if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
-						if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER then
+						if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_KILLER then
 							table.insert(innocents, p:Nick())
+						elseif p:GetRole() == ROLE_MERCENARY then
+							table.insert(mercenaries, p:Nick())
+						end
+						elseif p:GetRole() == ROLE_EMT then
+							table.insert(emts, p:Nick())
+						end
 						elseif p:GetRole() == ROLE_DETECTIVE then
 							table.insert(detectives, p:Nick())
 						end
@@ -744,13 +752,19 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 				if #innocents > 0 then
 					v:SetNWString("AssassinTarget", innocents[math.random(#innocents)])
 					--v:PrintMessage( HUD_PRINTTALK, "There is an innocent left")
+				elseif #mercenaries > 0 then
+					v:SetNWString("AssassinTarget", mercenaries[math.random(#mercenaries)])
+					--v:PrintMessage( HUD_PRINTTALK, "There is a mercenary left")
+				elseif #emts > 0 then
+					v:SetNWString("AssassinTarget", emts[math.random(#emts)])
+					--v:PrintMessage( HUD_PRINTTALK, "There is a emt left")
 				elseif #detectives > 0 then
 					v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
 					--v:PrintMessage( HUD_PRINTTALK, "There is a detective left")
 				end
-				if #innocents + #detectives > 1 then
+				if #innocents + #mercenaries + #emts + #detectives > 1 then
 					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your next target is " .. v:GetNWString("AssassinTarget", ""))
-				elseif #innocents + #detectives == 1 then
+				elseif #innocents + #mercenaries + #emts + #detectives == 1 then
 					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your final target is " .. v:GetNWString("AssassinTarget", ""))
 				end
 			end
@@ -814,8 +828,8 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 		KARMA.Killed(attacker, ply, dmginfo)
 		if not (IsValid(attacker) and attacker:IsPlayer() and attacker == ply) then
 			if IsValid(attacker) and attacker:IsPlayer() then
-				if ply:IsRole(ROLE_INNOCENT) or ply:IsRole(ROLE_DETECTIVE) or ply:IsRole(ROLE_GLITCH) or ply:IsRole(ROLE_MERCENARY) or ply:IsRole(ROLE_PHANTOM) then
-					if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) then
+				if ply:IsRole(ROLE_INNOCENT) or ply:IsRole(ROLE_DETECTIVE) or ply:IsRole(ROLE_GLITCH) or ply:IsRole(ROLE_MERCENARY) or ply:IsRole(ROLE_PHANTOM) or ply:IsRole(ROLE_EMT) then
+					if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) or attacker:IsRole(ROLE_EMT) then
 						if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
 							DRINKS.AddDrink(attacker)
 						elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
@@ -831,7 +845,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 						DRINKS.AddPlayerAction("death", ply)
 					end
 				elseif ply:IsRole(ROLE_TRAITOR) or ply:IsRole(ROLE_ASSASSIN) or ply:IsRole(ROLE_HYPNOTIST) or ply:IsRole(ROLE_VAMPIRE) or ply:IsRole(ROLE_ZOMBIE) then
-					if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) or attacker:IsRole(ROLE_KILLER) then
+					if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) or attacker:IsRole(ROLE_EMT) or attacker:IsRole(ROLE_KILLER) then
 						if GetConVar("ttt_drinking_death"):GetString() == "drink" then
 							DRINKS.AddDrink(ply)
 						elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
@@ -978,7 +992,11 @@ function GM:PlayerDeath(victim, infl, attacker)
 			victim:SpawnForRound(true)
 			victim:SetPos(FindRespawnLocation(body:GetPos()) or body:GetPos())
 			victim:SetEyeAngles(Angle(0, body:GetAngles().y, 0))
-			victim:SetHealth(100)
+			if attacker:GetRole() == ROLE_KILLER then
+				victim:SetHealth(150)
+			else
+				victim:SetHealth(100)
+			end
 			body:Remove()
 			SendFullStateUpdate()
 		end)
