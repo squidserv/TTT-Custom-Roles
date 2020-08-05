@@ -37,6 +37,7 @@ function GM:PlayerInitialSpawn(ply)
 		SendSwapperList()
 		SendAssassinList()
 		SendKillerList()
+		SendEMTList()
 	end
 	
 	-- Game has started, tell this gusy where the round is at
@@ -55,6 +56,7 @@ function GM:PlayerInitialSpawn(ply)
 		SendSwapperList(ply)
 		SendAssassinList(ply)
 		SendKillerList(ply)
+		SendEMTList(ply)
 	end
 	
 	-- Handle spec bots

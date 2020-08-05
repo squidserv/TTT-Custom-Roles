@@ -103,6 +103,10 @@ function GetPhantomFilter(alive_only)
 	return GetPlayerFilter(function(p) return p:IsPhantom() and (not alive_only or p:IsTerror()) end)
 end
 
+function GetEMTFilter(alive_only)
+	return GetPlayerFilter(function(p) return p:IsEMT() and (not alive_only or p:IsTerror()) end)
+end
+
 function GetJesterFilter(alive_only)
 	return GetPlayerFilter(function(p) return p:IsJester() and (not alive_only or p:IsTerror()) end)
 end

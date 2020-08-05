@@ -77,6 +77,8 @@ function SendKillerList(ply_or_rf) SendRoleList(ROLE_KILLER, ply_or_rf) end
 
 function SendInnocentList(ply_or_rf) SendRoleList(ROLE_INNOCENT, ply_or_rf) end
 
+function SendEMTList(ply_or_rf) SendRoleList(ROLE_EMT, ply_or_rf) end
+
 function SendConfirmedTraitors(ply_or_rf)
 	SendTraitorList(ply_or_rf, function(p) return p:GetNWBool("body_searched") end)
 end
@@ -96,6 +98,7 @@ function SendFullStateUpdate()
 	SendSwapperList()
 	SendAssassinList()
 	SendKillerList()
+	SendEMTList()
 	-- not useful to sync confirmed traitors here
 end
 
@@ -133,6 +136,7 @@ local function request_rolelist(ply)
 		SendSwapperList(ply)
 		SendAssassinList(ply)
 		SendKillerList(ply)
+		SendEMTList(ply)
 		
 		if ply:IsTraitor() then
 			SendTraitorList(ply)
@@ -271,6 +275,25 @@ local function force_jester(ply)
 end
 
 concommand.Add("ttt_force_jester", force_jester, nil, nil, FCVAR_CHEAT)
+
+local function force_emt(ply)
+	ply:SetRole(ROLE_EMT)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
+	if ply:HasWeapon("weapon_hyp_brainwash") then
+		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_vam_fangs") then
+		ply:StripWeapon("weapon_vam_fangs")
+	end
+	
+	ply:Give("weapon_emt_brainwash")
+	ply:Give("weapon_emt_healray")
+	
+	SendFullStateUpdate()
+end
+
+concommand.Add("ttt_force_emt", force_emt, nil, nil, FCVAR_CHEAT)
 
 local function force_phantom(ply)
 	ply:SetRole(ROLE_PHANTOM)

@@ -51,6 +51,9 @@ local function GetTextForRole(role)
 	elseif role == ROLE_PHANTOM then
 		return GetPTranslation("info_popup_phantom", { menukey = Key("+menu_context", "C") })
 	
+	elseif role == ROLE_EMT then
+		return GetPTranslation("info_popup_emt", { menukey = Key("+menu_context", "C") })
+	
 	elseif role == ROLE_ZOMBIE then
 		local zombies = {}
 		for _, ply in pairs(player.GetAll()) do

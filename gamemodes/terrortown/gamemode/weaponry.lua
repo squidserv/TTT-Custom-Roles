@@ -14,6 +14,8 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		return false
 	elseif not ply:GetHypnotist() and wep:GetClass() == "weapon_hyp_brainwash" then
 		return false
+	elseif not ply:GetEMT() and wep:GetClass() == "weapon_emt_brainwash" then
+		return false
 	elseif not ply:GetVampire() and wep:GetClass() == "weapon_vam_fangs" then
 		return false
 	elseif not ply:GetZombie() and wep:GetClass() == "weapon_zom_claws" then
@@ -49,7 +51,8 @@ local function GetLoadoutWeapons(r)
 			[ROLE_VAMPIRE] = {},
 			[ROLE_SWAPPER] = {},
 			[ROLE_ASSASSIN] = {},
-			[ROLE_KILLER] = {}
+			[ROLE_KILLER] = {},
+			[ROLE_EMT] = {}
 		};
 		
 		for k, w in pairs(weapons.GetList()) do

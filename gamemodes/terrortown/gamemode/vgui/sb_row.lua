@@ -101,7 +101,8 @@ local rolecolor = {
 	vampire = Color(70, 70, 70, 30),
 	swapper = Color(111, 0, 255, 30),
 	assassin = Color(112, 50, 0, 30),
-	killer = Color(60, 0, 80, 30)
+	killer = Color(60, 0, 80, 30),
+	emt = Color(25, 145, 200, 30)
 }
 
 function GM:TTTScoreboardColorForPlayer(ply)
@@ -143,6 +144,8 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
 			return rolecolor.phantom
 		elseif ply:IsKiller() then
 			return rolecolor.killer
+		elseif ply:IsEMT() then
+			return rolecolor.emt
 		else
 			return rolecolor.innocent
 		end
@@ -233,6 +236,8 @@ function PANEL:Paint(width, height)
 		rolestr = "swa"
 	elseif c == rolecolor.killer then
 		rolestr = "kil"
+	elseif c == rolecolor.emt then
+		rolestr = "emt"
 	end
 	
 	if rolestr ~= "" then

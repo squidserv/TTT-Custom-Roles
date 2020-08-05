@@ -90,6 +90,7 @@ CreateConVar("ttt_vampire_enabled", "1")
 CreateConVar("ttt_swapper_enabled", "1")
 CreateConVar("ttt_assassin_enabled", "1")
 CreateConVar("ttt_killer_enabled", "1")
+CreateConVar("ttt_emt_enabled", "1")
 
 CreateConVar("ttt_zombie_chance", "0.1")
 CreateConVar("ttt_hypnotist_chance", "0.2")
@@ -101,6 +102,7 @@ CreateConVar("ttt_mercenary_chance", "0.25")
 CreateConVar("ttt_jester_chance", "0.25")
 CreateConVar("ttt_swapper_chance", "0.25")
 CreateConVar("ttt_killer_chance", "0.25")
+CreateConVar("ttt_emt_chance", "0.25")
 
 CreateConVar("ttt_mercenary_required_innos", "2")
 CreateConVar("ttt_hypnotist_required_traitors", "2")
@@ -111,6 +113,7 @@ CreateConVar("ttt_vampire_required_traitors", "2")
 CreateConVar("ttt_swapper_required_innos", "2")
 CreateConVar("ttt_assassin_required_traitors", "2")
 CreateConVar("ttt_killer_required_innos", "3")
+CreateConVar("ttt_emt_required_innos", "2")
 
 CreateConVar("ttt_zombie_pct", "0.33")
 
@@ -161,6 +164,11 @@ CreateConVar("ttt_namechange_kick", "1", FCVAR_NOTIFY)
 CreateConVar("ttt_namechange_bantime", "10")
 
 CreateConVar("ttt_karma_beta", "0", FCVAR_REPLICATED)
+
+-- EMT variables
+CreateConVar("ttt_emt_hot_initial", "20")
+CreateConVar("ttt_emt_hot_amount", "5")
+CreateConVar("ttt_emt_hot_charges", "3")
 
 -- Drinking game punishments
 CreateConVar("ttt_drinking_death", "drink")
@@ -809,11 +817,17 @@ function BeginRound()
 		v:SetNWString("AssassinTarget", "")
 		if v:GetRole() == ROLE_ASSASSIN then
 			local innocents = {}
+			local mercenaries = {}
+			local emts = {}
 			local detectives = {}
 			for i, p in pairs(player.GetAll()) do
 				if p:Alive() and not p:IsSpec() then
-					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER then
+					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_KILLER then
 						table.insert(innocents, p:Nick())
+					elseif p:GetRole() == ROLE_MERCENARY then
+						table.insert(mercenaries, p:Nick())
+					elseif p:GetRole() == ROLE_EMT then
+						table.insert(emts, p:Nick())
 					elseif p:GetRole() == ROLE_DETECTIVE then
 						table.insert(detectives, p:Nick())
 					end
@@ -821,12 +835,16 @@ function BeginRound()
 			end
 			if #innocents > 0 then
 				v:SetNWString("AssassinTarget", innocents[math.random(#innocents)])
+			elseif #mercenaries > 0 then
+				v:SetNWString("AssassinTarget", innocents[math.random(#mercenaries)])
+			elseif #emts > 0 then
+				v:SetNWString("AssassinTarget", innocents[math.random(#emts)])
 			elseif #detectives > 0 then
 				v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
 			end
-			if #innocents + #detectives > 1 then
+			if #innocents + #mercenaries + #emts + #detectives > 1 then
 				v:PrintMessage(HUD_PRINTCENTER, "Your first target is " .. v:GetNWString("AssassinTarget", ""))
-			elseif #innocents + #detectives == 1 then
+			elseif #innocents + #mercenaries + #emts + #detectives == 1 then
 				v:PrintMessage(HUD_PRINTCENTER, "Your final target is " .. v:GetNWString("AssassinTarget", ""))
 			end
 		elseif v:GetRole() == ROLE_HYPNOTIST then
@@ -951,11 +969,11 @@ function LogScore(type)
 		roleStats = util.JSONToTable(file.Read("stats/roleStats.txt", "DATA"))
 	end
 	
-	local roundRoles = { false, false, false, false, false, false, false, false, false, false, false, false }
-	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer" }
+	local roundRoles = { false, false, false, false, false, false, false, false, false, false, false, false, false }
+	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer", "EMT"}
 	
 	for k, v in pairs(player.GetAll()) do
-		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
+		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM or v:GetRole() == ROLE_EMT)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
 		
 		if not playerStats[v:Nick()] then
 			playerStats[v:Nick()] = { 0, 0 } -- Wins, Rounds
@@ -1136,6 +1154,7 @@ function SelectRoles()
 		[ROLE_SWAPPER] = {},
 		[ROLE_ASSASSIN] = {},
 		[ROLE_KILLER] = {}
+		[ROLE_EMT] = {}
 	};
 	
 	if not GAMEMODE.LastRole then GAMEMODE.LastRole = {} end
@@ -1191,6 +1210,8 @@ function SelectRoles()
 	local mercenary_chance = GetConVar("ttt_mercenary_chance"):GetFloat()
 	local real_mercenary_chance = mercenary_chance
 	
+	local emt_chance = GetConVar("ttt_emt_chance"):GetFloat()
+	local real_emt_chance = emt_chance
 	if choice_count == 0 then return end
 	
 	local choices_copy = table.Copy(choices)
@@ -1210,6 +1231,7 @@ function SelectRoles()
 	local hasGlitch = false
 	local hasDetective = false
 	local hasKiller = false
+	local hasEMT = false
 	
 	if #choices == 3 then
 		hasDetective = true
@@ -1273,6 +1295,9 @@ function SelectRoles()
 				elseif role == ROLE_GLITCH then
 					hasGlitch = true
 					print(v:Nick() .. " (" .. v:SteamID() .. ") - Glitch")
+				elseif role == ROLE_EMT then
+					hasEMT = true
+					print(v:Nick() .. " (" .. v:SteamID() .. ") - EMT")
 				end
 			end
 		end
@@ -1429,6 +1454,15 @@ function SelectRoles()
 			hasGlitch = true
 		end
 	end
+	if GetConVar("ttt_emt_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_emt_required_innos"):GetInt() and math.random() <= real_emt_chance and not hasEMT then
+		local pick = math.random(1, #choices)
+		local pply = choices[pick]
+		if IsValid(pply) then
+			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - EMT")
+			pply:SetRole(ROLE_EMT)
+			table.remove(choices, pick)
+			hasEMT = true
+		end
 	for k, v in pairs(choices) do
 		if v:GetRole() ~= ROLE_DETECTIVE then
 			print(v:Nick() .. " (" .. v:SteamID() .. ") - Innocent")
