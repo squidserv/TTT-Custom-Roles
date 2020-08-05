@@ -182,9 +182,18 @@ ttt_killer_required_innos       3 // (Default: 3): Number of innocents for the K
 ttt_karma_jesterkill_penalty 50   // (Default: 50): Karma penalty for killing the Jester
 ttt_karma_jester_ratio       0.5  // (Default: 0.5): Ratio of damage to Jesters, to be taken from karma
 
+// Weapon Shop
+ttt_shop_merc_mode      0 // How to handle Mercenary shop weapons. All modes include weapons specifically mapped to the Mercenary role. 0 (Disable) - Do not allow additional weapons. 1 (Union) - Allow weapons available to EITHER the Traitor or the Detective. 2 (Intersect) - Allow weapons available to BOTH the Traitor and the Detective. 3 (Detective) - Allow weapons available to the Detective. 4 (Traitor) - Allow weapons available to the Traitor.
+ttt_shop_assassin_sync  0 // Whether Assassins should have all weapons that vanilla Traitors have in their weapon shop
+ttt_shop_hypnotist_sync 0 // Whether Hypnotists should have all weapons that vanilla Traitors have in their weapon shop
+ttt_shop_vampire_sync   0 // Whether Vampires should have all weapons that vanilla Traitors have in their weapon shop
+
 // Other
 ttt_zombie_pct              0.25 // (Default: 0.25): Percentage of total players that will be a Zombie
 ttt_mer_credits_starting    1    // (Default: 1): Number of credits the Mercenary starts with
 ttt_kil_credits_starting    2    // (Default: 2): Number of credits the Killer starts with
-ttt_detective_search_only   1    // (Default: 1): Whether only detectives can search bodies or not
+ttt_assin_credits_starting  0	 // (Default: 0): Number of credits the Assassin starts with
+ttt_hypno_credits_starting  0	 // (Default: 0): Number of credits the Hypnotist starts with
+ttt_vamp_credits_starting   0	 // (Default: 0): Number of credits the Vampire starts with
+ttt_detective_search_only   1   // (Default: 1): Whether only detectives can search bodies or not
 ```
