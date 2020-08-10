@@ -48,7 +48,7 @@ local cvf = FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_SERVER_CAN_EXECUTE
 local maxdist = 64
 local success = 100
 
-local charge = 5
+local charge = 8
 local mutateok = 0
 local mutatemax = 0
 local spawnhealth = 100
@@ -203,16 +203,6 @@ if SERVER then
 		--ply:SetRole(ROLE_TRAITOR)
 		ply:PrintMessage(HUD_PRINTCENTER, "You have been revived by an EMT!")
 		ply:SetHealth(ply:GetMaxHealth())
-
-		if ply:IsAssassin() then
-			ply:ConCommand("ttt_radar_scan")
-		elseif ply:IsKiller() then
-			ply:SetMaxHealth(150)
-			ply:SetHealth(150)
-		elseif ply:IsBouncer() then
-			ply:SetMaxHealth(175)
-			ply:SetHealth(175)
-		end
 		
 		body:Remove()
 		
@@ -220,8 +210,6 @@ if SERVER then
 
 		SendFullStateUpdate()
 
-		-- force them to wield crowbar
-		ply:SwitchToDefaultWeapon()
 		
 		self:GetOwner():ConCommand("lastinv")
 		self:Remove()
@@ -284,8 +272,6 @@ if SERVER then
 		local ent = tr.Entity
 		
 		if ent and IsValid(ent) then
-
-			charge = self:GetOwner():GetNWInt("ReviveTime", 5)
 
 			if ent:GetClass() == "prop_physics" and mutate[ent:GetModel()] and mutateok > 0 then
 				self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
@@ -356,7 +342,7 @@ if CLIENT then
 		
 		if state == DEFIB_BUSY then
 
-			charge = self:GetOwner():GetNWInt("ReviveTime", 5)
+
 
 			local timer = self:GetBegin() + charge
 			
