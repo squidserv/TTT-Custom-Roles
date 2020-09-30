@@ -221,6 +221,14 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
 		return
 	end
 	
+	local allowCovertSearch = GetGlobalBool("ttt_allow_covert_search", true)
+	
+	-- disallow covert search unless bad or jester/swapper
+	if not allowCovertSearch and covert and not (ply:IsActiveTraitor() or ply:IsActiveZombie() or ply:IsActiveVampire() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() or ply:IsActiveKiller() or 
+	ply:IsActiveJester() or ply:IsActiveSwapper()) then
+		return
+	end
+	
 	if not hook.Run("TTTCanSearchCorpse", ply, rag, covert, long_range, (rag.was_role == ROLE_TRAITOR)) then
 		return
 	end

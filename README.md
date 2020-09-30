@@ -205,4 +205,5 @@ ttt_assin_credits_starting  0	 // (Default: 0): Number of credits the Assassin s
 ttt_hypno_credits_starting  0	 // (Default: 0): Number of credits the Hypnotist starts with
 ttt_vamp_credits_starting   0	 // (Default: 0): Number of credits the Vampire starts with
 ttt_detective_search_only   1   // (Default: 1): Whether only detectives can search bodies or not
+ttt_allow_covert_search		0	// (Default: 0): Whether to allow innocent roles to covertly search bodies or not
 ```

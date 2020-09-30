@@ -138,7 +138,7 @@ CreateConVar("ttt_hypno_credits_starting", "0")
 CreateConVar("ttt_vamp_credits_starting", "0")
 
 CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
-
+CreateConVar("ttt_allow_covert_search", "0", FCVAR_REPLICATED)
 
 -- Shop convars
 CreateConVar("ttt_shop_merc_mode", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
@@ -341,6 +341,7 @@ function GM:SyncGlobals()
 	SetGlobalFloat("ttt_voice_drain_recharge", GetConVar("ttt_voice_drain_recharge"):GetFloat())
 	
 	SetGlobalBool("ttt_detective_search_only", GetConVar("ttt_detective_search_only"):GetBool())
+	SetGlobalBool("ttt_allow_covert_search", GetConVar("ttt_allow_covert_search"):GetBool())
 	SetGlobalInt("ttt_shop_merc_mode", GetConVar("ttt_shop_merc_mode"):GetInt())
     SetGlobalBool("ttt_shop_assassin_sync", GetConVar("ttt_shop_assassin_sync"):GetBool())
     SetGlobalBool("ttt_shop_hypnotist_sync", GetConVar("ttt_shop_hypnotist_sync"):GetBool())
