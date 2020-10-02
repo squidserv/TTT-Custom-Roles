@@ -221,6 +221,18 @@ function RADAR:Draw(client)
 					surface.SetDrawColor(0, 255, 0, alpha)
 					surface.SetTextColor(0, 255, 0, alpha)
 				end
+			elseif client:GetKiller() then
+				if role == ROLE_DETECTIVE then
+					surface.SetDrawColor(0, 0, 255, alpha)
+					surface.SetTextColor(0, 0, 255, alpha)
+				elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
+					surface.SetDrawColor(180, 23, 253, alpha)
+					surface.SetTextColor(180, 23, 253, alpha)
+				else
+					surface.SetDrawColor(0, 255, 0, alpha)
+					surface.SetTextColor(0, 255, 0, alpha)
+				end
+			end
 			else
 				if role == ROLE_DETECTIVE then
 					surface.SetDrawColor(0, 0, 255, alpha)
