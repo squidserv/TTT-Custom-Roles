@@ -232,7 +232,6 @@ function RADAR:Draw(client)
 					surface.SetDrawColor(0, 255, 0, alpha)
 					surface.SetTextColor(0, 255, 0, alpha)
 				end
-			end
 			else
 				if role == ROLE_DETECTIVE then
 					surface.SetDrawColor(0, 0, 255, alpha)

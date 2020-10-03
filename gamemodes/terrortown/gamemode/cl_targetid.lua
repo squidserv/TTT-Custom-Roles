@@ -216,7 +216,6 @@ function GM:PostDrawTranslucentRenderables()
 						render.SetMaterial(indicator_matjes)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
-				end
 				elseif client:GetRole() == ROLE_KILLER then
 					if v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
 						render.SetMaterial(indicator_matjes)
